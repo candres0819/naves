@@ -1,6 +1,4 @@
-'use strict'
-
-// Objeto importantes de canvas.
+//Objeto importantes de canvas.
 var canvas = document.getElementById('game');
 var ctx = canvas.getContext('2d');
 
@@ -33,8 +31,9 @@ function dibujarEnemigos() {
 	for ( var i in enemigos) {
 		var enemigo = enemigos[i];
 		ctx.save();
+		console.log("enemigo1: " + i);
 		if (enemigo.estado == 'vivo') {
-			ctx.fillStyle = 'green';
+			ctx.fillStyle = 'red';
 		}
 		if (enemigo.estado == 'muerto') {
 			ctx.fillStyle = 'black';
@@ -97,15 +96,16 @@ function actualizarEnemigos() {
 	if (juego.estado == 'iniciando') {
 		for (var i = 0; i < 10; i++) {
 			enemigos.push({
-				x : 10 + (i * 50),
-				y : 10,
-				height : 40,
-				width : 40,
-				estado : 'vivo',
-				contador : 0
+				x: 10+(i*50),
+				y: 10,
+				height: 40,
+				widht: 40,
+				estado: 'vivo',
+				contador: 0
 			});
 		}
 		juego.estado = 'jugando';
+		console.log("ingreso: " + enemigos);
 	}
 	for ( var i in enemigos) {
 		var enemigo = enemigos[i];
@@ -114,22 +114,9 @@ function actualizarEnemigos() {
 		}
 		if (enemigo && enemigo.estado == 'vivo') {
 			enemigo.contador++;
-			enemigo.x += Math.sin(enemigo.contador * Math.PI / 90) * 5;
-		}
-		if (enemigo && enemigo.estado == 'hit') {
-			enemigo.contador++;
-			if (enemigo.contador >= 20) {
-				enemigo.estado = 'muerto';
-				enemigo.contador = 0;
-			}
+			enemigo.x += Math.sin(enemigo.contador * Math.PI/90)*5;
 		}
 	}
-	enemigos = enemigos.filter(function(enemigo) {
-		if (enemigo && enemigo.estado !== 'muerto') {
-			return true;
-		}
-		return false;
-	});
 }
 function moverDisparos() {
 	for ( var i in disparos) {
@@ -157,44 +144,11 @@ function dibujarDisparos() {
 	}
 	ctx.restore();
 }
-function hit(a, b) {
-	var hit = false;
-	if (a.x + b.x >= a.x && b.x < a.x + a.width) {
-		if (b.y + b.height >= a.y && b.y < a.y + a.height) {
-			hit = true;
-		}
-	}
-	if (b.x <= a.x && b.x + b.width >= a.x + a.width) {
-		if (b.y <= a.y && b.y + b.height >= a.y + a.height) {
-			hit = true;
-		}
-	}
-	if (a.x <= b.x && a.x + a.width >= b.x + b.width) {
-		if (a.y <= b.y && a.y + a.height >= b.y + b.height) {
-			hit = true;
-		}
-	}
-	return hit;
-}
-function verificarContacto() {
-	for ( var i in disparos) {
-		var disparo = disparos[i];
-		for ( var j in enemigos) {
-			var enemigo = enemigos[i];
-			if (hit(disparo, enemigo)) {
-				enemigo.estado = 'hit';
-				enemigo.contador = 0;
-				console.log('Hubo hit')
-			}
-		}
-	}
-}
 function frameLoop() {
 	moverNave();
+	actualizarEnemigos();
 	moverDisparos();
 	dibujarFondo();
-	verificarContacto()
-	actualizarEnemigos();
 	dibujarEnemigos();
 	dibujarDisparos();
 	dibujarNave();
